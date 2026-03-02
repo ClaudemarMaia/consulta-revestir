@@ -23,8 +23,12 @@
             padding: 0;
             line-height: 1.4;
         }
-        
-        /* TELA INICIAL CENTRALIZADA */
+
+        /* Ajuste para inputs não darem zoom automático no iOS */
+        input, select { 
+            font-size: 16px !important; 
+        }
+
         #selection-screen { 
             display: flex;
             flex-direction: column;
@@ -32,134 +36,118 @@
             align-items: center;
             height: 100vh;
             padding: 20px;
-            text-align: center;
+            gap: 20px;
         }
 
-        .card-inicio {
-            background: white;
-            padding: 30px 20px;
-            border-radius: 20px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+        .btn-main {
             width: 100%;
-            max-width: 400px;
+            max-width: 300px;
+            padding: 20px;
+            border: none;
+            border-radius: 12px;
+            color: white;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
         }
 
-        .btn-main { 
-            display: block; width: 100%; padding: 18px; margin: 12px 0; font-size: 1.1rem; font-weight: 700;
-            border: none; border-radius: 12px; cursor: pointer; color: white; text-transform: uppercase;
-        }
         .btn-lojista { background-color: var(--primary-lojista); }
         .btn-especificador { background-color: var(--primary-especificador); }
 
-        /* TELA DE PESQUISA RESPONSIVA */
-        #search-screen { display: none; width: 100%; }
-        
+        #search-screen { display: none; padding-top: 140px; }
+
         .sticky-header {
-            position: sticky;
+            position: fixed;
             top: 0;
+            width: 100%;
             background: white;
             padding: 15px;
-            border-bottom: 1px solid #ddd;
-            z-index: 100;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            z-index: 1000;
         }
 
-        .search-controls { 
-            display: flex;
-            flex-direction: column;
+        .search-controls {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr;
             gap: 10px;
         }
 
-        /* Ajuste para telas maiores (tablets/PC) */
-        @media (min-width: 600px) {
-            .search-controls { flex-direction: row; }
-            .field-group { flex: 1; }
+        @media (max-width: 480px) {
+            .search-controls {
+                grid-template-columns: 1.5fr 0.8fr 1fr;
+            }
         }
 
-        .field-group { display: flex; flex-direction: column; }
-        .field-group label { font-size: 11px; font-weight: bold; color: #888; margin-bottom: 4px; text-transform: uppercase; }
-        
-        input { 
-            padding: 12px; 
-            border: 2px solid #eee; 
-            border-radius: 10px; 
-            font-size: 16px; /* 16px evita o zoom automático no iPhone ao clicar */
+        .field-group { display: flex; flex-direction: column; gap: 4px; }
+        .field-group label { font-size: 11px; font-weight: bold; color: #636e72; text-transform: uppercase; }
+
+        input {
+            padding: 10px;
+            border: 1px solid #dfe6e9;
+            border-radius: 8px;
+            outline: none;
             width: 100%;
-            background: #fdfdfd;
         }
 
-        /* LISTA DE RESULTADOS */
-        .results-container { padding: 10px; max-width: 800px; margin: 0 auto; }
-        
-        .result-item { 
+        input:focus { border-color: var(--primary-lojista); }
+
+        .results-container { padding: 15px; }
+
+        .result-item {
             background: white;
-            margin-bottom: 10px;
-            padding: 15px; 
-            border-radius: 15px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.03);
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 12px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
         }
 
-        .item-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px; }
-        .ref-code { font-weight: 800; color: #444; font-size: 1rem; }
-        .ilha-badge { background: #eee; padding: 3px 8px; border-radius: 6px; font-size: 11px; font-weight: bold; }
-        
-        .description { font-size: 14px; color: #666; margin-bottom: 15px; display: block; }
-        
-        /* LINHA DE PREÇOS SOLICITADA */
-        .price-row { 
-            display: flex; 
-            justify-content: space-between; 
-            align-items: center; 
-            border-top: 1px dashed #eee;
-            padding-top: 12px;
-        }
+        .item-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px; }
+        .ref-code { font-weight: bold; color: var(--primary-lojista); font-size: 14px; }
+        .ilha-badge { background: #ffeaa7; color: #d63031; padding: 2px 8px; border-radius: 4px; font-size: 11px; font-weight: 800; }
 
-        .price-base { 
-            color: #999; 
-            font-size: 1.1rem; /* Maior que o padrão */
-            text-decoration: line-through; 
-        }
+        .description { display: block; font-size: 14px; color: #636e72; margin-bottom: 12px; }
 
-        .price-final { 
-            color: var(--success); 
-            font-size: 1.3rem; 
-            font-weight: 900; 
-            text-align: right;
+        .price-row { display: flex; justify-content: space-between; align-items: flex-end; border-top: 1px dashed #eee; pt: 10px; }
+        .price-base { font-size: 13px; color: #b2bec3; text-decoration: line-through; }
+        .price-final { font-size: 20px; font-weight: 800; color: var(--success); }
+
+        .no-results { text-align: center; color: #b2bec3; margin-top: 50px; }
+
+        .back-btn {
+            background: none; border: none; color: #636e72; font-size: 14px; margin-bottom: 10px; cursor: pointer; padding: 0;
         }
-        
-        .no-results { text-align: center; color: #999; padding: 40px; }
     </style>
 </head>
 <body>
 
     <div id="selection-screen">
-        <div class="card-inicio">
-            <h2 style="margin-top:0">Consulta de Preços</h2>
-            <button class="btn-main btn-lojista" onclick="startApp('lojista')">Lojista</button>
-            <button class="btn-main btn-especificador" onclick="startApp('especificador')">Especificador</button>
-        </div>
+        <h2>Selecione o Perfil</h2>
+        <button class="btn-main btn-lojista" onclick="startApp('lojista')">LOJISTA</button>
+        <button class="btn-main btn-especificador" onclick="startApp('especificador')">ESPECIFICADOR</button>
     </div>
 
     <div id="search-screen">
         <div class="sticky-header">
+            <button class="back-btn" onclick="location.reload()">← Voltar</button>
             <div class="search-controls">
-                <div class="field-group" style="flex: 2;">
-                    <label>Produto ou Referência</label>
-                    <input type="text" id="search" placeholder="Ex: LX3388..." autocomplete="off">
+                <div class="field-group">
+                    <label>Produto/Ref</label>
+                    <input type="text" id="search" placeholder="Ex: LX3388" autocomplete="off">
                 </div>
                 <div class="field-group">
                     <label>Ilha</label>
-                    <input type="text" id="ilha" placeholder="Nº">
+                    <input type="text" id="ilha" placeholder="0" inputmode="decimal">
                 </div>
                 <div class="field-group">
-                    <label>Desconto %</label>
-                    <input type="number" id="discount" value="0" min="0">
+                    <label>Desc %</label>
+                    <input type="number" id="discount" placeholder="0" value="0">
                 </div>
             </div>
         </div>
 
-        <div id="results-list" class="results-container">
-            <div class="no-results">Busque por nome, referência ou ilha.</div>
+        <div class="results-container" id="results-list">
+            <div class="no-results">Digite algo para pesquisar...</div>
         </div>
     </div>
 
@@ -171,31 +159,43 @@
             currentMode = mode;
             document.getElementById('selection-screen').style.display = 'none';
             document.getElementById('search-screen').style.display = 'block';
-            window.scrollTo(0,0);
+            
+            // Ajusta cor do tema conforme modo
+            const primaryColor = mode === 'lojista' ? '#007bff' : '#6f42c1';
+            document.documentElement.style.setProperty('--primary-lojista', primaryColor);
         }
 
-        function formatCurrency(val) {
-            return val.toLocaleString('pt-br', { style: 'currency', currency: 'BRL' });
+        function formatCurrency(value) {
+            return value.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
         }
 
         function updateResults() {
             const queryRef = document.getElementById('search').value.toLowerCase().trim();
-            const queryIlha = document.getElementById('ilha').value.toLowerCase().trim();
+            const queryIlhaRaw = document.getElementById('ilha').value.trim();
             const discount = parseFloat(document.getElementById('discount').value) || 0;
             const container = document.getElementById('results-list');
-            
-            if (!queryRef && !queryIlha) {
-                container.innerHTML = '<div class="no-results">Aguardando pesquisa...</div>';
+
+            // Lógica do Zero à frente para Ilha
+            let queryIlhaWithZero = queryIlhaRaw;
+            if (queryIlhaRaw !== "" && !isNaN(queryIlhaRaw) && queryIlhaRaw.length === 1) {
+                queryIlhaWithZero = "0" + queryIlhaRaw;
+            }
+
+            if (!queryRef && !queryIlhaRaw) {
+                container.innerHTML = '<div class="no-results">Busque por nome, referência ou ilha.</div>';
                 return;
             }
 
             const filtered = database.filter(item => {
                 const itemRef = String(item.r || "").toLowerCase();
                 const itemDesc = String(item.d || "").toLowerCase();
-                const itemIlha = String(item.i || "").toLowerCase();
+                const itemIlha = String(item.i || "").trim();
 
                 const matchesRef = !queryRef || (itemRef.includes(queryRef) || itemDesc.includes(queryRef));
-                const matchesIlha = !queryIlha || itemIlha === queryIlha || itemIlha.includes(queryIlha);
+                
+                // Busca por ilha normal OU com zero à frente
+                const matchesIlha = !queryIlhaRaw || 
+                                    (itemIlha === queryIlhaRaw || itemIlha === queryIlhaWithZero);
 
                 return matchesRef && matchesIlha;
             });
