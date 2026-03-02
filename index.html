@@ -3,186 +3,154 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Consulta Revestir - Por Ilha</title>
+    <title>Sistema de Consulta de Preços</title>
     <style>
-        :root {
-            --primary: #1a2a3a;
-            --accent: #27ae60;
-            --ilha-color: #8e44ad;
-            --bg: #f4f7f6;
+        body { font-family: 'Segoe UI', sans-serif; background-color: #f0f2f5; margin: 0; display: flex; align-items: center; justify-content: center; min-height: 100vh; }
+        
+        /* TELA INICIAL */
+        #selection-screen { text-align: center; background: white; padding: 40px; border-radius: 15px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); width: 90%; max-width: 500px; }
+        .btn-main { 
+            display: block; width: 100%; padding: 20px; margin: 15px 0; font-size: 18px; font-weight: bold;
+            border: none; border-radius: 10px; cursor: pointer; transition: 0.3s; color: white; text-transform: uppercase;
         }
+        .btn-lojista { background-color: #007bff; }
+        .btn-especificador { background-color: #6f42c1; }
+        .btn-main:hover { opacity: 0.9; transform: scale(1.02); }
 
-        body {
-            font-family: 'Segoe UI', sans-serif;
-            background-color: var(--bg);
-            margin: 0;
-            padding: 10px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
+        /* TELA DE PESQUISA */
+        #search-screen { display: none; width: 95%; max-width: 900px; background: white; padding: 25px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); margin: 20px; align-self: flex-start; margin-top: 50px; }
+        
+        .header-search { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 2px solid #eee; padding-bottom: 15px; }
+        .btn-back { background: #dc3545; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; font-weight: bold; }
 
-        .app-card {
-            width: 100%;
-            max-width: 500px;
-            background: white;
-            border-radius: 12px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
-            padding: 20px;
-            box-sizing: border-box;
-        }
+        .search-grid { display: grid; grid-template-columns: 1.5fr 1fr 0.8fr; gap: 15px; margin-bottom: 20px; }
+        .field-group { display: flex; flex-direction: column; }
+        .field-group label { font-weight: bold; margin-bottom: 5px; color: #444; font-size: 14px; }
+        
+        input { padding: 12px; border: 1px solid #ccc; border-radius: 6px; font-size: 16px; width: 100%; box-sizing: border-box; }
 
-        .control-group {
-            background: #f8f9fa;
-            padding: 15px;
-            border-radius: 8px;
-            margin-bottom: 20px;
-            border: 1px solid #eee;
-        }
-
-        label { display: block; font-size: 0.8rem; color: #666; margin-bottom: 5px; font-weight: bold; }
-
-        input {
-            width: 100%;
-            padding: 12px;
-            border: 2px solid #ddd;
-            border-radius: 8px;
-            font-size: 16px;
-            box-sizing: border-box;
-            margin-bottom: 10px;
-        }
-
-        .ilha-badge {
-            display: inline-block;
-            background: var(--ilha-color);
-            color: white;
-            padding: 5px 12px;
-            border-radius: 20px;
-            font-size: 0.8rem;
-            font-weight: bold;
-            margin-bottom: 10px;
-        }
-
-        .result-item {
-            border: 1px solid #eee;
-            border-radius: 10px;
-            padding: 15px;
-            margin-bottom: 15px;
-            background: #fff;
-        }
-
-        .ref-code { font-weight: bold; color: var(--primary); font-size: 1.1rem; }
-        .description { font-size: 0.85rem; color: #7f8c8d; margin: 5px 0 12px 0; line-height: 1.4; }
-
-        .price-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 10px;
-            border-top: 1px dashed #eee;
-            padding-top: 10px;
-        }
-
-        .price-box { font-size: 0.8rem; color: #666; }
-        .price-box strong { display: block; font-size: 1rem; color: #333; }
-
-        .final-price-box {
-            grid-column: span 2;
-            background: #ebf5ee;
-            padding: 12px;
-            border-radius: 8px;
-            text-align: center;
-            border: 1px solid var(--accent);
-            margin-top: 8px;
-        }
-
-        .final-price-box span { color: var(--accent); font-weight: bold; font-size: 1.4rem; display: block; }
+        /* RESULTADOS */
+        .result-item { padding: 15px; border-bottom: 1px solid #f0f0f0; display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        .ref-code { font-weight: bold; color: #007bff; grid-column: span 1; font-size: 1.1em; }
+        .ilha-tag { text-align: right; font-weight: bold; color: #e67e22; font-size: 0.9em; }
+        .description { font-size: 0.9em; color: #555; grid-column: span 2; margin-bottom: 5px; }
+        .price-final { text-align: right; color: #28a745; font-size: 1.2em; font-weight: bold; }
+        
+        .badge { padding: 4px 10px; border-radius: 4px; font-size: 0.8em; color: white; font-weight: bold; }
+        .bg-lojista { background: #007bff; }
+        .bg-especificador { background: #6f42c1; }
+        .no-results { text-align: center; color: #999; padding: 30px; grid-column: span 2; }
     </style>
 </head>
 <body>
 
-<div class="app-card">
-    <div style="text-align: center; margin-bottom: 15px;">
-        <h1 style="font-size: 1.3rem; margin: 0; color: var(--primary);">Busca por Ilha / Ref</h1>
+    <div id="selection-screen">
+        <h1 style="margin-top:0">Selecione o Perfil</h1>
+        <button class="btn-main btn-lojista" onclick="startApp('lojista')">Lojistas</button>
+        <button class="btn-main btn-especificador" onclick="startApp('especificador')">Especificadores</button>
     </div>
 
-    <div class="control-group">
-        <label>PESQUISAR (ILHA, REF OU PRODUTO)</label>
-        <input type="text" id="search" placeholder="Ex: Ilha 01, LX3388...">
-
-        <label>DESCONTO NO PREÇO BASE (%)</label>
-        <input type="number" id="discount" value="0" min="0" max="100">
-    </div>
-
-    <div id="results-list">
+    <div id="search-screen">
+        <div class="header-search">
+            <div>
+                <span id="mode-badge" class="badge"></span>
+                <h3 style="margin: 5px 0 0 0;">Catálogo de Produtos</h3>
+            </div>
+            <button class="btn-back" onclick="location.reload()">← VOLTAR</button>
         </div>
-</div>
 
-<script>
-    // Dados simulados com base no seu CSV (adicionei a coluna 'ilha')
-    const database = [
-        { ilha: "ILHA 01", ref: "LX3388", desc: "MISTURADOR MONOC. GOURMET CROMADO", preco: 1848.94, ecom: 3149.59 },
-        { ilha: "ILHA 01", ref: "LX3388GF", desc: "MISTURADOR MONOC. GOURMET GRAFITE", preco: 2147.16, ecom: 3657.61 },
-        { ilha: "ILHA 02", ref: "LX91BM", desc: "MANGUEIRA FLEXIVEL 1,8 MTS - BLACK MATTE", preco: 104.78, ecom: 194.10 },
-        { ilha: "ILHA 02", ref: "LX91G", desc: "MANGUEIRA FLEXIVEL 1,8 MTS - GOLD", preco: 104.78, ecom: 194.10 },
-        { ilha: "ILHA 03", ref: "LX91GF", desc: "MANGUEIRA FLEXIVEL 1,8 MTS - GRAFITE", preco: 104.16, ecom: 192.96 }
-    ];
+        <div class="search-grid">
+            <div class="field-group">
+                <label>Referência / Descrição:</label>
+                <input type="text" id="search" placeholder="Ex: LX3388...">
+            </div>
+            <div class="field-group">
+                <label>Ilha:</label>
+                <input type="text" id="ilha" placeholder="Ex: 01, 02...">
+            </div>
+            <div class="field-group">
+                <label>Desconto %:</label>
+                <input type="number" id="discount" value="0">
+            </div>
+        </div>
 
-    const searchInput = document.getElementById('search');
-    const discountInput = document.getElementById('discount');
-    const resultsContainer = document.getElementById('results-list');
+        <div id="results-list">
+            <div class="no-results">Aguardando pesquisa...</div>
+        </div>
+    </div>
 
-    function formatCurrency(val) {
-        return val.toLocaleString('pt-br', { style: 'currency', currency: 'BRL' });
-    }
+    <script src="database.js"></script>
+    <script>
+        let currentMode = '';
 
-    function updateResults() {
-        const term = searchInput.value.toLowerCase();
-        const discount = parseFloat(discountInput.value) || 0;
-
-        if (term.length < 1) {
-            resultsContainer.innerHTML = '<p style="text-align:center; color:#999;">Digite a Ilha ou Referência...</p>';
-            return;
+        function startApp(mode) {
+            currentMode = mode;
+            document.getElementById('selection-screen').style.display = 'none';
+            document.getElementById('search-screen').style.display = 'block';
+            document.getElementById('mode-badge').innerText = mode.toUpperCase();
+            document.getElementById('mode-badge').className = 'badge ' + (mode === 'lojista' ? 'bg-lojista' : 'bg-especificador');
+            document.getElementById('search').focus();
         }
 
-        const filtered = database.filter(item => 
-            item.ilha.toLowerCase().includes(term) ||
-            item.ref.toLowerCase().includes(term) || 
-            item.desc.toLowerCase().includes(term)
-        );
+        function formatCurrency(val) {
+            return (val || 0).toLocaleString('pt-br', { style: 'currency', currency: 'BRL' });
+        }
 
-        resultsContainer.innerHTML = '';
-
-        filtered.forEach(item => {
-            const discountedPrice = item.preco * (1 - (discount / 100));
+        function updateResults() {
+            const queryRef = document.getElementById('search').value.toLowerCase().trim();
+            const queryIlha = document.getElementById('ilha').value.toLowerCase().trim();
+            const discount = parseFloat(document.getElementById('discount').value) || 0;
+            const container = document.getElementById('results-list');
             
-            resultsContainer.innerHTML += `
-                <div class="result-item">
-                    <span class="ilha-badge">📍 ${item.ilha}</span>
-                    <div class="ref-code">${item.ref}</div>
-                    <div class="description">${item.desc}</div>
-                    <div class="price-grid">
-                        <div class="price-box">Preço Base: <strong>${formatCurrency(item.preco)}</strong></div>
-                        <div class="price-box">E-commerce: <strong>${formatCurrency(item.ecom)}</strong></div>
-                        <div class="final-price-box">
-                            <small>VALOR COM ${discount}% DE DESCONTO</small>
-                            <span>${formatCurrency(discountedPrice)}</span>
+            container.innerHTML = '';
+            
+            // Se ambos estiverem vazios, não mostra nada
+            if (!queryRef && !queryIlha) {
+                container.innerHTML = '<div class="no-results">Pesquise por Referência ou Ilha...</div>';
+                return;
+            }
+
+            const filtered = database.filter(item => {
+                // Converte os valores do banco para string para evitar erro se for número
+                const itemRef = String(item.r || "").toLowerCase();
+                const itemDesc = String(item.d || "").toLowerCase();
+                const itemIlha = String(item.i || "").toLowerCase();
+
+                // Lógica: O item deve bater com a Referência (se digitada) E com a Ilha (se digitada)
+                const matchesRef = !queryRef || (itemRef.includes(queryRef) || itemDesc.includes(queryRef));
+                const matchesIlha = !queryIlha || itemIlha.includes(queryIlha);
+
+                return matchesRef && matchesIlha;
+            });
+
+            if (filtered.length === 0) {
+                container.innerHTML = '<div class="no-results">Nenhum item encontrado.</div>';
+                return;
+            }
+
+            filtered.forEach(item => {
+                const basePrice = (currentMode === 'lojista') ? item.p : item.e;
+                const finalPrice = basePrice * (1 - (discount / 100));
+
+                container.innerHTML += `
+                    <div class="result-item">
+                        <div class="ref-code">${item.r}</div>
+                        <div class="ilha-tag">${item.i ? 'Ilha: ' + item.i : ''}</div>
+                        <div class="description">${item.d}</div>
+                        <div>
+                            <span style="color:#888; font-size:0.8em">BASE: ${formatCurrency(basePrice)}</span>
                         </div>
-                    </div>
-                </div>
-            `;
-        });
-
-        if (filtered.length === 0) {
-            resultsContainer.innerHTML = '<p style="text-align:center; color:#999;">Nada encontrado.</p>';
+                        <div class="price-final">
+                            <span style="font-size: 10px; color: #28a745; display:block">COM DESCONTO</span>
+                            ${formatCurrency(finalPrice)}
+                        </div>
+                    </div>`;
+            });
         }
-    }
 
-    searchInput.addEventListener('input', updateResults);
-    discountInput.addEventListener('input', updateResults);
-    
-    // Iniciar vazio
-    updateResults();
-</script>
-
+        document.getElementById('search').oninput = updateResults;
+        document.getElementById('ilha').oninput = updateResults;
+        document.getElementById('discount').oninput = updateResults;
+    </script>
 </body>
 </html>
