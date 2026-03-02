@@ -2,80 +2,164 @@
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sistema de Consulta de Preços</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Consulta de Preços</title>
     <style>
-        body { font-family: 'Segoe UI', sans-serif; background-color: #f0f2f5; margin: 0; display: flex; align-items: center; justify-content: center; min-height: 100vh; }
-        
-        /* TELA INICIAL */
-        #selection-screen { text-align: center; background: white; padding: 40px; border-radius: 15px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); width: 90%; max-width: 500px; }
-        .btn-main { 
-            display: block; width: 100%; padding: 20px; margin: 15px 0; font-size: 18px; font-weight: bold;
-            border: none; border-radius: 10px; cursor: pointer; transition: 0.3s; color: white; text-transform: uppercase;
+        :root {
+            --primary-lojista: #007bff;
+            --primary-especificador: #6f42c1;
+            --success: #28a745;
+            --bg: #f4f7f6;
+            --text: #2d3436;
         }
-        .btn-lojista { background-color: #007bff; }
-        .btn-especificador { background-color: #6f42c1; }
-        .btn-main:hover { opacity: 0.9; transform: scale(1.02); }
 
-        /* TELA DE PESQUISA */
-        #search-screen { display: none; width: 95%; max-width: 900px; background: white; padding: 25px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); margin: 20px; align-self: flex-start; margin-top: 50px; }
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+        body { 
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg); 
+            color: var(--text);
+            margin: 0;
+            padding: 0;
+            line-height: 1.4;
+        }
         
-        .header-search { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 2px solid #eee; padding-bottom: 15px; }
-        .btn-back { background: #dc3545; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; font-weight: bold; }
+        /* TELA INICIAL CENTRALIZADA */
+        #selection-screen { 
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            padding: 20px;
+            text-align: center;
+        }
 
-        .search-grid { display: grid; grid-template-columns: 1.5fr 1fr 0.8fr; gap: 15px; margin-bottom: 20px; }
+        .card-inicio {
+            background: white;
+            padding: 30px 20px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+            width: 100%;
+            max-width: 400px;
+        }
+
+        .btn-main { 
+            display: block; width: 100%; padding: 18px; margin: 12px 0; font-size: 1.1rem; font-weight: 700;
+            border: none; border-radius: 12px; cursor: pointer; color: white; text-transform: uppercase;
+        }
+        .btn-lojista { background-color: var(--primary-lojista); }
+        .btn-especificador { background-color: var(--primary-especificador); }
+
+        /* TELA DE PESQUISA RESPONSIVA */
+        #search-screen { display: none; width: 100%; }
+        
+        .sticky-header {
+            position: sticky;
+            top: 0;
+            background: white;
+            padding: 15px;
+            border-bottom: 1px solid #ddd;
+            z-index: 100;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+
+        .search-controls { 
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        /* Ajuste para telas maiores (tablets/PC) */
+        @media (min-width: 600px) {
+            .search-controls { flex-direction: row; }
+            .field-group { flex: 1; }
+        }
+
         .field-group { display: flex; flex-direction: column; }
-        .field-group label { font-weight: bold; margin-bottom: 5px; color: #444; font-size: 14px; }
+        .field-group label { font-size: 11px; font-weight: bold; color: #888; margin-bottom: 4px; text-transform: uppercase; }
         
-        input { padding: 12px; border: 1px solid #ccc; border-radius: 6px; font-size: 16px; width: 100%; box-sizing: border-box; }
+        input { 
+            padding: 12px; 
+            border: 2px solid #eee; 
+            border-radius: 10px; 
+            font-size: 16px; /* 16px evita o zoom automático no iPhone ao clicar */
+            width: 100%;
+            background: #fdfdfd;
+        }
 
-        /* RESULTADOS */
-        .result-item { padding: 15px; border-bottom: 1px solid #f0f0f0; display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-        .ref-code { font-weight: bold; color: #007bff; grid-column: span 1; font-size: 1.1em; }
-        .ilha-tag { text-align: right; font-weight: bold; color: #e67e22; font-size: 0.9em; }
-        .description { font-size: 0.9em; color: #555; grid-column: span 2; margin-bottom: 5px; }
-        .price-final { text-align: right; color: #28a745; font-size: 1.2em; font-weight: bold; }
+        /* LISTA DE RESULTADOS */
+        .results-container { padding: 10px; max-width: 800px; margin: 0 auto; }
         
-        .badge { padding: 4px 10px; border-radius: 4px; font-size: 0.8em; color: white; font-weight: bold; }
-        .bg-lojista { background: #007bff; }
-        .bg-especificador { background: #6f42c1; }
-        .no-results { text-align: center; color: #999; padding: 30px; grid-column: span 2; }
+        .result-item { 
+            background: white;
+            margin-bottom: 10px;
+            padding: 15px; 
+            border-radius: 15px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.03);
+        }
+
+        .item-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px; }
+        .ref-code { font-weight: 800; color: #444; font-size: 1rem; }
+        .ilha-badge { background: #eee; padding: 3px 8px; border-radius: 6px; font-size: 11px; font-weight: bold; }
+        
+        .description { font-size: 14px; color: #666; margin-bottom: 15px; display: block; }
+        
+        /* LINHA DE PREÇOS SOLICITADA */
+        .price-row { 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            border-top: 1px dashed #eee;
+            padding-top: 12px;
+        }
+
+        .price-base { 
+            color: #999; 
+            font-size: 1.1rem; /* Maior que o padrão */
+            text-decoration: line-through; 
+        }
+
+        .price-final { 
+            color: var(--success); 
+            font-size: 1.3rem; 
+            font-weight: 900; 
+            text-align: right;
+        }
+        
+        .no-results { text-align: center; color: #999; padding: 40px; }
     </style>
 </head>
 <body>
 
     <div id="selection-screen">
-        <h1 style="margin-top:0">Selecione o Perfil</h1>
-        <button class="btn-main btn-lojista" onclick="startApp('lojista')">Lojistas</button>
-        <button class="btn-main btn-especificador" onclick="startApp('especificador')">Especificadores</button>
+        <div class="card-inicio">
+            <h2 style="margin-top:0">Consulta de Preços</h2>
+            <button class="btn-main btn-lojista" onclick="startApp('lojista')">Lojista</button>
+            <button class="btn-main btn-especificador" onclick="startApp('especificador')">Especificador</button>
+        </div>
     </div>
 
     <div id="search-screen">
-        <div class="header-search">
-            <div>
-                <span id="mode-badge" class="badge"></span>
-                <h3 style="margin: 5px 0 0 0;">Catálogo de Produtos</h3>
-            </div>
-            <button class="btn-back" onclick="location.reload()">← VOLTAR</button>
-        </div>
-
-        <div class="search-grid">
-            <div class="field-group">
-                <label>Referência / Descrição:</label>
-                <input type="text" id="search" placeholder="Ex: LX3388...">
-            </div>
-            <div class="field-group">
-                <label>Ilha:</label>
-                <input type="text" id="ilha" placeholder="Ex: 01, 02...">
-            </div>
-            <div class="field-group">
-                <label>Desconto %:</label>
-                <input type="number" id="discount" value="0">
+        <div class="sticky-header">
+            <div class="search-controls">
+                <div class="field-group" style="flex: 2;">
+                    <label>Produto ou Referência</label>
+                    <input type="text" id="search" placeholder="Ex: LX3388..." autocomplete="off">
+                </div>
+                <div class="field-group">
+                    <label>Ilha</label>
+                    <input type="text" id="ilha" placeholder="Nº">
+                </div>
+                <div class="field-group">
+                    <label>Desconto %</label>
+                    <input type="number" id="discount" value="0" min="0">
+                </div>
             </div>
         </div>
 
-        <div id="results-list">
-            <div class="no-results">Aguardando pesquisa...</div>
+        <div id="results-list" class="results-container">
+            <div class="no-results">Busque por nome, referência ou ilha.</div>
         </div>
     </div>
 
@@ -87,13 +171,11 @@
             currentMode = mode;
             document.getElementById('selection-screen').style.display = 'none';
             document.getElementById('search-screen').style.display = 'block';
-            document.getElementById('mode-badge').innerText = mode.toUpperCase();
-            document.getElementById('mode-badge').className = 'badge ' + (mode === 'lojista' ? 'bg-lojista' : 'bg-especificador');
-            document.getElementById('search').focus();
+            window.scrollTo(0,0);
         }
 
         function formatCurrency(val) {
-            return (val || 0).toLocaleString('pt-br', { style: 'currency', currency: 'BRL' });
+            return val.toLocaleString('pt-br', { style: 'currency', currency: 'BRL' });
         }
 
         function updateResults() {
@@ -102,50 +184,44 @@
             const discount = parseFloat(document.getElementById('discount').value) || 0;
             const container = document.getElementById('results-list');
             
-            container.innerHTML = '';
-            
-            // Se ambos estiverem vazios, não mostra nada
             if (!queryRef && !queryIlha) {
-                container.innerHTML = '<div class="no-results">Pesquise por Referência ou Ilha...</div>';
+                container.innerHTML = '<div class="no-results">Aguardando pesquisa...</div>';
                 return;
             }
 
             const filtered = database.filter(item => {
-                // Converte os valores do banco para string para evitar erro se for número
                 const itemRef = String(item.r || "").toLowerCase();
                 const itemDesc = String(item.d || "").toLowerCase();
                 const itemIlha = String(item.i || "").toLowerCase();
 
-                // Lógica: O item deve bater com a Referência (se digitada) E com a Ilha (se digitada)
                 const matchesRef = !queryRef || (itemRef.includes(queryRef) || itemDesc.includes(queryRef));
-                const matchesIlha = !queryIlha || itemIlha.includes(queryIlha);
+                const matchesIlha = !queryIlha || itemIlha === queryIlha || itemIlha.includes(queryIlha);
 
                 return matchesRef && matchesIlha;
             });
 
             if (filtered.length === 0) {
-                container.innerHTML = '<div class="no-results">Nenhum item encontrado.</div>';
+                container.innerHTML = '<div class="no-results">Nenhum produto encontrado.</div>';
                 return;
             }
 
-            filtered.forEach(item => {
+            container.innerHTML = filtered.map(item => {
                 const basePrice = (currentMode === 'lojista') ? item.p : item.e;
                 const finalPrice = basePrice * (1 - (discount / 100));
 
-                container.innerHTML += `
+                return `
                     <div class="result-item">
-                        <div class="ref-code">${item.r}</div>
-                        <div class="ilha-tag">${item.i ? 'Ilha: ' + item.i : ''}</div>
-                        <div class="description">${item.d}</div>
-                        <div>
-                            <span style="color:#888; font-size:0.8em">BASE: ${formatCurrency(basePrice)}</span>
+                        <div class="item-header">
+                            <span class="ref-code">${item.r}</span>
+                            ${item.i ? `<span class="ilha-badge">ILHA ${item.i}</span>` : ''}
                         </div>
-                        <div class="price-final">
-                            <span style="font-size: 10px; color: #28a745; display:block">COM DESCONTO</span>
-                            ${formatCurrency(finalPrice)}
+                        <span class="description">${item.d}</span>
+                        <div class="price-row">
+                            <div class="price-base">${formatCurrency(basePrice)}</div>
+                            <div class="price-final">${formatCurrency(finalPrice)}</div>
                         </div>
                     </div>`;
-            });
+            }).join('');
         }
 
         document.getElementById('search').oninput = updateResults;
